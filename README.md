@@ -58,6 +58,19 @@ A smart fridge tracker focused on effortless food logging and timely expiration 
 
 ### Domain diagram
 
+```mermaid
+classDiagram
+    class Fridge {
+        +name: String
+    }
+    class Food {
+        +name: String
+        +expirationDate: Date
+    }
+    
+    Fridge "1" -- "0..*" Food : contains
+```
+
 ## Design
 
 ### Endpoint definition
