@@ -1,0 +1,44 @@
+stages:
+  - build
+  - test
+  - containerize
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+
+# 1. Build & Test Backend
+build-backend:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  script:
+    - cd src/backend
+    - dotnet restore
+    - dotnet build --no-restore -c Release
+
+test-backend:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  script:
+    - cd src/backend
+    - dotnet test --no-build -c Release --verbosity normal
+
+# 2. Build Frontend
+build-frontend:
+  stage: build
+  image: node:24-alpine
+  script:
+    - cd src/frontend/icebox-web
+    - npm ci
+    - npm run build -- --configuration production
+  artifacts:
+    paths:
+      - src/frontend/icebox-web/dist/
+
+# 3. Docker Verification (Optional)
+docker-check:
+  stage: containerize
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  script:
+    - docker compose config

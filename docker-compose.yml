@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: icebox-db
+    environment:
+      POSTGRES_DB: icebox_db
+      POSTGRES_USER: icebox_user
+      POSTGRES_PASSWORD: IceboxSecretPassword123!
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./src/backend
+      dockerfile: Icebox.API/Dockerfile
+    container_name: icebox-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=icebox_db;Username=icebox_user;Password=IceboxSecretPassword123!
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+
+  web:
+    build:
+      context: ./src/frontend/icebox-web
+      dockerfile: Dockerfile
+    container_name: icebox-web
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
