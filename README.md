@@ -5,6 +5,10 @@ A smart fridge tracker focused on effortless food logging and timely expiration 
 
 ### Wireframes
 
+![Main Screen Wireframe](./analysis/main_screen.jpg)
+![Add Fridge Wireframe](./analysis/add_fridge.jpg)
+![Add Food Wireframe](./analysis/add_food.jpg)
+
 ### Use cases
 
 ### Domain diagram
