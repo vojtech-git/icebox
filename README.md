@@ -75,6 +75,25 @@ classDiagram
 
 ### Endpoint definition
 
+- GET /fridge
+    - Gets all fridges and their food ids
+- GET /fridge/{id}
+    - Gets fridge and its food ids
+- GET /food/{id}
+    - Gets food and its name and expiration date
+- POST /fridge
+    - Creates fridge with name
+- POST /food
+    - Creates food with name and expiration date
+- PATCH /food/{id}
+    - Updates food name or expiration date
+- PATCH /fridge/{id}
+    - Updates fridge name
+- DELETE /fridge/{id}
+    - Deletes a fridge and all its food
+- DELETE /food/{id}
+    - Deletes food
+
 ### BE class diagram
 
 ### FE class diagram
