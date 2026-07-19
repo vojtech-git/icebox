@@ -1,3 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Icebox.Application.Fridges;
+using Scalar.AspNetCore;
+using Icebox.Infrastructure;
+using Icebox.Infrastructure.Fridges;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MediatR (scans Application assembly)
@@ -12,14 +18,16 @@ builder.Services.AddScoped<IFridgeRepository, FridgeRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Built-in .NET OpenAPI generator
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.MapControllers();

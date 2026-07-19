@@ -1,3 +1,5 @@
+namespace Icebox.Domain.Fridges;
+
 public class Fridge
 {
     public Guid Id { get; private set; }
@@ -13,5 +15,13 @@ public class Fridge
         Id = Guid.NewGuid();
         Name = name;
         DateCreated = DateTime.UtcNow;
+    }
+
+    public void UpdateName(string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new ArgumentException("Fridge name cannot be empty.", nameof(newName));
+
+        Name = newName;
     }
 }

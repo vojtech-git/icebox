@@ -1,3 +1,9 @@
+using MediatR;
+
+namespace Icebox.Application.Fridges;
+
+public record GetAllFridgesQuery : IRequest<List<FridgeDto>>;
+
 public class GetAllFridgesQueryHandler : IRequestHandler<GetAllFridgesQuery, List<FridgeDto>>
 {
     private readonly IFridgeRepository _repository;

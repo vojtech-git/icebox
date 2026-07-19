@@ -1,3 +1,8 @@
+using MediatR;
+using Icebox.Domain.Fridges;
+
+namespace Icebox.Application.Fridges;
+
 public record CreateFridgeCommand(string Name) : IRequest<FridgeDto>;
 
 public class CreateFridgeCommandHandler : IRequestHandler<CreateFridgeCommand, FridgeDto>

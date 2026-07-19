@@ -1,3 +1,8 @@
+using Icebox.Domain.Fridges;
+using Microsoft.EntityFrameworkCore;
+
+namespace Icebox.Infrastructure;
+
 public class IceboxDbContext : DbContext
 {
     public IceboxDbContext(DbContextOptions<IceboxDbContext> options) : base(options) { }
