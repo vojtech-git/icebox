@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Icebox.Application.Foods.Commands.UpdateFood;
+namespace Icebox.Application.Foods;
 
 public record UpdateFoodCommand(Guid Id, string Name, DateTime ExpirationDate) : IRequest<FoodDto?>;
 
