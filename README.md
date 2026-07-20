@@ -96,6 +96,45 @@ classDiagram
 
 ### BE class diagram
 
+#### Fridges
+
+```mermaid
+%%{init: {'class': {'hideEmptyMembersBox': true}}}%%
+classDiagram
+    namespace Domain {
+        class Fridge {
+            +Guid Id
+            +String Name
+            +DateTime DateCreated
+            +List~Guid~ FoodIds
+        }
+    }
+    namespace Application {
+        class IFridgeRepository {
+            <<interface>>
+            +AddAsync(Fridge)
+            +GetAllAsync() List~Fridge~
+        }
+        class CreateFridgeCommand
+        class GetAllFridgesQuery
+    }
+    namespace Infrastructure {
+        class IceboxDbContext
+        class FridgeRepository
+    }
+    namespace API {
+        class FridgeController
+    }
+
+    FridgeController --> CreateFridgeCommand : dispatches
+    FridgeController --> GetAllFridgesQuery : dispatches
+    CreateFridgeCommand --> IFridgeRepository : uses
+    GetAllFridgesQuery --> IFridgeRepository : uses
+    FridgeRepository ..|> IFridgeRepository : implements
+    FridgeRepository --> IceboxDbContext : uses
+    IFridgeRepository --> Fridge : returns
+```
+
 ### FE class diagram
 
 ## Implementation
