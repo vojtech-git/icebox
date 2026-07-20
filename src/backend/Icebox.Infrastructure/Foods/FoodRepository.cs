@@ -20,6 +20,12 @@ public class FoodRepository : IFoodRepository
         return await _context.Foods.FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
     }
 
+    public Task DeleteAsync(Food food, CancellationToken cancellationToken)
+    {
+        _context.Foods.Remove(food);
+        return Task.CompletedTask;
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);

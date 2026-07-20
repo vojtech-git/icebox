@@ -20,4 +20,13 @@ public class Food
         ExpirationDate = expirationDate;
         FridgeId = fridgeId;
     }
+
+    public void UpdateDetails(string name, DateTime expirationDate)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Food name cannot be empty.", nameof(name));
+
+        Name = name;
+        ExpirationDate = expirationDate;
+    }
 }
