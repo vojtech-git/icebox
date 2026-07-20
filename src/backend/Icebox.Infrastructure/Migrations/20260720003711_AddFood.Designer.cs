@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Icebox.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Icebox.Infrastructure.Migrations
 {
     [DbContext(typeof(IceboxDbContext))]
-    partial class IceboxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720003711_AddFood")]
+    partial class AddFood
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,8 +45,6 @@ namespace Icebox.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FridgeId");
-
                     b.ToTable("Foods");
                 });
 
@@ -68,15 +69,6 @@ namespace Icebox.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Fridges");
-                });
-
-            modelBuilder.Entity("Icebox.Domain.Foods.Food", b =>
-                {
-                    b.HasOne("Icebox.Domain.Fridges.Fridge", null)
-                        .WithMany()
-                        .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
