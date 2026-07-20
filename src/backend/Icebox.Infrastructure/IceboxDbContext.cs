@@ -27,5 +27,11 @@ public class IceboxDbContext : DbContext
             entity.Property(e => e.ExpirationDate).IsRequired();
             entity.Property(e => e.FridgeId).IsRequired();
         });
+
+        modelBuilder.Entity<Food>()
+        .HasOne<Fridge>()
+        .WithMany()
+        .HasForeignKey(f => f.FridgeId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
 }
