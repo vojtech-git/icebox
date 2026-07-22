@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, output, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FridgeService } from '../../services/fridge.service';
 import { FridgeDto } from '../../models/fridge.model';
 
 @Component({
   selector: 'app-add-fridge-prompt',
-  standalone: true,
   imports: [FormsModule],
   template: `
     <div class="modal">
@@ -20,8 +19,8 @@ export class AddFridgePromptComponent {
   private fridgeService = inject(FridgeService);
   fridgeName = '';
 
-  @Output() fridgeAdded = new EventEmitter<FridgeDto>();
-  @Output() cancelled = new EventEmitter<void>();
+  fridgeAdded = output<FridgeDto>();
+  cancelled = output<void>();
 
   submit() {
     if (!this.fridgeName.trim()) return;

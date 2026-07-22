@@ -5,7 +5,6 @@ import { AddFridgePromptComponent } from '../add-fridge-prompt/add-fridge-prompt
 
 @Component({
   selector: 'app-main-screen',
-  standalone: true,
   imports: [AddFridgePromptComponent],
   template: `
     <div class="container">

@@ -1,12 +1,9 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { MainScreenComponent } from './features/fridges/components/main-screen/main-screen.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  imports: [MainScreenComponent],
+  template: `<app-main-screen />`
 })
-export class App {
-  protected readonly title = signal('icebox-web');
-}
+export class App {}
