@@ -11,13 +11,24 @@ A smart fridge tracker focused on effortless food logging and timely expiration 
 
 ### Use cases
 
-1. Add fridge
-2. Add food
-3. Update fridge name
-4. Update food name or expiration date
-5. Remove fridge
-6. Remove food
-
+```mermaid
+graph LR
+    User([User])
+    subgraph Icebox
+        UC1[Add Fridge]
+        UC2[Add Food]
+        UC3[Update Fridge Name]
+        UC4[Update Food Name or Expiration Date]
+        UC5[Remove Fridge]
+        UC6[Remove Food]
+    end
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+```
 #### Add fridge
 
 1. User clicks add fridge button on the main screen
