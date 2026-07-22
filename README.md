@@ -107,8 +107,6 @@ classDiagram
 
 ### BE class diagram
 
-#### Fridges
-
 ```mermaid
 %%{init: {'class': {'hideEmptyMembersBox': true}}}%%
 classDiagram
@@ -118,35 +116,126 @@ classDiagram
             +String Name
             +DateTime DateCreated
             +List~Guid~ FoodIds
+            +UpdateName(String)
+        }
+        class Food {
+            +Guid Id
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
+            +UpdateDetails(String, DateTime)
         }
     }
     namespace Application {
         class IFridgeRepository {
             <<interface>>
-            +AddAsync(Fridge)
-            +GetAllAsync() List~Fridge~
+            +AddAsync(Fridge, CancellationToken)
+            +GetAllAsync(CancellationToken) List~Fridge~
+            +GetByIdAsync(Guid, CancellationToken) Fridge
+            +DeleteAsync(Fridge, CancellationToken)
+            +SaveChangesAsync(CancellationToken)
         }
-        class CreateFridgeCommand
-        class GetAllFridgesQuery
+        class IFoodRepository {
+            <<interface>>
+            +AddAsync(Food, CancellationToken)
+            +GetByIdAsync(Guid, CancellationToken) Food
+            +DeleteAsync(Food, CancellationToken)
+            +SaveChangesAsync(CancellationToken)
+        }
     }
     namespace Infrastructure {
-        class IceboxDbContext
-        class FridgeRepository
+        class IceboxDbContext {
+            +DbSet~Fridge~ Fridges
+            +DbSet~Food~ Foods
+        }
+        class FridgeRepository {
+            -IceboxDbContext _context
+        }
+        class FoodRepository {
+            -IceboxDbContext _context
+        }
     }
     namespace API {
-        class FridgeController
+        class FridgeController {
+            -IMediator _mediator
+        }
+        class FoodController {
+            -IMediator _mediator
+        }
     }
 
-    FridgeController --> CreateFridgeCommand : dispatches
-    FridgeController --> GetAllFridgesQuery : dispatches
-    CreateFridgeCommand --> IFridgeRepository : uses
-    GetAllFridgesQuery --> IFridgeRepository : uses
+    FridgeController --> IMediator : uses
+    FoodController --> IMediator : uses
     FridgeRepository ..|> IFridgeRepository : implements
+    FoodRepository ..|> IFoodRepository : implements
     FridgeRepository --> IceboxDbContext : uses
-    IFridgeRepository --> Fridge : returns
+    FoodRepository --> IceboxDbContext : uses
+    IceboxDbContext --> Fridge : manages
+    IceboxDbContext --> Food : manages
+    Fridge "1" o-- "0..*" Food : contains
 ```
 
 ### FE class diagram
+
+```mermaid
+%%{init: {'class': {'hideEmptyMembersBox': true}}}%%
+classDiagram
+    namespace Models {
+        class FridgeDto {
+            +string id
+            +string name
+            +string dateCreated
+            +string[] foodIds
+        }
+        class CreateFridgeCommand {
+            +string name
+        }
+    }
+    namespace Services {
+        class FridgeService {
+            -HttpClient http
+            -string apiUrl
+            -string foodUrl
+            +getFridges() Observable~FridgeDto[]~
+            +createFridge(command) Observable~FridgeDto~
+            +deleteFridge(id)
+            +renameFridge(id, newName)
+            +getFridgeById(id)
+            +addFood(fridgeId, itemName)
+            +removeFood(itemId)
+            +getFoodById(foodId)
+        }
+    }
+    namespace Components {
+        class MainScreenComponent {
+            -FridgeService fridgeService
+            +signal fridges
+            +signal showPrompt
+            +ngOnInit()
+            +loadFridges()
+            +onFridgeAdded(newFridge)
+            +removeFridge(id)
+            +renameFridge(id)
+        }
+        class FridgeDetail {
+            -ActivatedRoute route
+            -FridgeService fridgeService
+            +signal fridge
+            +signal foods
+            +string fridgeId
+            +ngOnInit()
+            +loadFridge()
+            +loadFoods(foodIds)
+            +addNewItem()
+            +consumeItem(itemId)
+        }
+    }
+
+    MainScreenComponent --> FridgeService : uses
+    FridgeDetail --> FridgeService : uses
+    FridgeService --> FridgeDto : uses
+    FridgeService --> CreateFridgeCommand : uses
+```
 
 ## Implementation
 
