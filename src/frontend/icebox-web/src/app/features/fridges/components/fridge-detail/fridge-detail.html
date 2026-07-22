@@ -1,0 +1,22 @@
+@if (fridge()) {
+  <div class="fridge-header">
+    <a routerLink="/">← Back to My Iceboxes</a>
+    <h2>{{ fridge().name }}</h2>
+  </div>
+
+  <div class="fridge-contents">
+    <button (click)="addNewItem()">+ Add Food</button>
+    <hr>
+
+    @for (food of foods(); track food.id) {
+      <div class="item-card">
+        <span>{{ food.name }} (Expires: {{ food.expirationDate | date:'shortDate' }})</span>
+        <button (click)="consumeItem(food.id)">Consume / Remove</button>
+      </div>
+    } @empty {
+      <p>This fridge is empty! Add some food.</p>
+    }
+  </div>
+} @else {
+  <p>Loading fridge details...</p>
+}

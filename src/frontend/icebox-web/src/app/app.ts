@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { MainScreenComponent } from './features/fridges/components/main-screen/main-screen.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [MainScreenComponent],
-  template: `<app-main-screen />`
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
+  styleUrl: './app.css'
 })
 export class App {}
