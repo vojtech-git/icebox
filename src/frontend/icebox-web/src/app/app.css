@@ -1,0 +1,45 @@
+:root {
+  --primary: #0ea5e9;
+  --primary-hover: #0284c7;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --bg-gradient: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+  --surface: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05);
+  --radius: 12px;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-right: 0.5rem;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+button:active {
+  transform: translateY(0);
+}
