@@ -6,8 +6,8 @@ import { FridgeDto, CreateFridgeCommand } from '../models/fridge.model';
 @Injectable({ providedIn: 'root' })
 export class FridgeService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://192.168.1.105:8080/api/fridge';
-  private foodUrl = 'http://192.168.1.105:8080/api/food';
+  private apiUrl = 'http://localhost:8080/api/fridge';
+  private foodUrl = 'http://localhost:8080/api/food';
 
   getFridges(): Observable<FridgeDto[]> {
     return this.http.get<FridgeDto[]>(this.apiUrl);
