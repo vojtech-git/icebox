@@ -15,7 +15,7 @@ services:
     build:
       context: ./src/backend
       dockerfile: Icebox.API/Dockerfile
-    container_name: icebox-api
+    container_name: backend
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=icebox_db;Username=icebox_user;Password=IceboxSecretPassword123!
@@ -26,9 +26,9 @@ services:
 
   web:
     build:
-      context: ./src/frontend/icebox-web
+      context: ./src/frontend
       dockerfile: Dockerfile
-    container_name: icebox-web
+    container_name: frontend
     ports:
       - "4200:80"
     depends_on:
