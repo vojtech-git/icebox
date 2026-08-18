@@ -9,7 +9,6 @@ import { GetAllFridgesPresenter } from '../domain/fridges/get-all-fridges.presen
 import { HttpFridgeRepository } from '../integration/fridges/http-fridge.repository';
 import { InMemoryFridgeStore } from '../integration/fridges/in-memory-fridge.store';
 import { SignalGetAllFridgesPresenter } from '../presentation/fridges/signal-get-all-fridges.presenter';
-
 import { CreateFridgePresenter } from '../domain/fridges/create-fridge.presenter';
 import { SignalCreateFridgePresenter } from '../presentation/fridges/signal-create-fridge.presenter';
 

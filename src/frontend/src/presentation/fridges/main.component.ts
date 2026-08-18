@@ -23,24 +23,28 @@ import { CreateFridgePresenter } from '../../domain/fridges/create-fridge.presen
   @if (getAllPresenter.error()) { <div class="error">{{ getAllPresenter.error() }}</div> }
   
   <div class="board">
-    @for (fridge of getAllPresenter.fridges(); track fridge.id) {
+    @for (fridge of getAllPresenter.fridges(); track fridge.id)
+    {
       <div class="fridge-column">{{ fridge.name }}</div>
     }
   </div>
 `
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit
+{
   getAllPresenter = inject(GetAllFridgesPresenter);
   createPresenter = inject(CreateFridgePresenter);
   
   private getAllUseCase = inject(GetAllFridgesUseCase);
   private createUseCase = inject(CreateFridgeUseCase);
 
-  ngOnInit(): void {
+  ngOnInit(): void
+  {
     this.getAllUseCase.execute();
   }
 
-  createFridge(name: string): void {
+  createFridge(name: string): void
+  {
     this.createUseCase.execute(name);
     setTimeout(() => this.getAllUseCase.execute(), 100); 
   }
