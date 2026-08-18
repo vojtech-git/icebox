@@ -1,7 +1,8 @@
 import { Signal } from '@angular/core';
-import { Fridge } from './Fridge.model';
+import { Fridge } from './fridge.model';
 
-export abstract class IGetAllFridgesPresenter {
+export abstract class GetAllFridgesPresenter
+{
   abstract readonly fridges: Signal<Fridge[]>;
   abstract readonly isLoading: Signal<boolean>;
   abstract readonly error: Signal<string | null>;

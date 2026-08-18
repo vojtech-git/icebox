@@ -3,23 +3,25 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 
-import { IFridgeRepository } from '../domain/fridges/IFridgeRepository';
-import { IFridgeDataStore } from '../domain/fridges/IFridgeDataStore';
-import { IGetAllFridgesPresenter } from '../domain/fridges/IGetAllFridgesPresenter';
-import { FridgeRepository } from '../integration/fridges/Fridge.repository';
-import { FridgeStore } from '../integration/fridges/Fridge.store';
-import { GetAllFridgesPresenter } from '../presentation/fridges/GetAllFridges.presenter';
+import { FridgeRepository } from '../domain/fridges/fridge.repository';
+import { FridgeDataStore } from '../domain/fridges/fridge.data-store';
+import { GetAllFridgesPresenter } from '../domain/fridges/get-all-fridges.presenter';
+import { HttpFridgeRepository } from '../integration/fridges/http-fridge.repository';
+import { InMemoryFridgeStore } from '../integration/fridges/in-memory-fridge.store';
+import { SignalGetAllFridgesPresenter } from '../presentation/fridges/signal-get-all-fridges.presenter';
 
-import { ICreateFridgePresenter } from '../domain/fridges/ICreateFridgePresenter';
-import { CreateFridgePresenter } from '../presentation/fridges/CreateFridge.presenter';
+import { CreateFridgePresenter } from '../domain/fridges/create-fridge.presenter';
+import { SignalCreateFridgePresenter } from '../presentation/fridges/signal-create-fridge.presenter';
 
-export const appConfig: ApplicationConfig = {
-  providers: [
+export const appConfig: ApplicationConfig =
+{
+  providers:
+  [
     provideRouter(routes),
     provideHttpClient(),
-    { provide: IFridgeRepository, useClass: FridgeRepository },
-    { provide: IFridgeDataStore, useClass: FridgeStore },
-    { provide: IGetAllFridgesPresenter, useClass: GetAllFridgesPresenter },
-    { provide: ICreateFridgePresenter, useClass: CreateFridgePresenter }
+    { provide: FridgeRepository, useClass: HttpFridgeRepository },
+    { provide: FridgeDataStore, useClass: InMemoryFridgeStore },
+    { provide: GetAllFridgesPresenter, useClass: SignalGetAllFridgesPresenter },
+    { provide: CreateFridgePresenter, useClass: SignalCreateFridgePresenter }
   ]
 };

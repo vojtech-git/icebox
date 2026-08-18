@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { GetAllFridgesUseCase } from '../../application/fridges/GetAllFridges.usecase';
-import { IGetAllFridgesPresenter } from '../../domain/fridges/IGetAllFridgesPresenter';
-import { CreateFridgeUseCase } from '../../application/fridges/CreateFridge.usecase';
-import { ICreateFridgePresenter } from '../../domain/fridges/ICreateFridgePresenter';
+import { GetAllFridgesUseCase } from '../../application/fridges/get-all-fridges.usecase';
+import { GetAllFridgesPresenter } from '../../domain/fridges/get-all-fridges.presenter';
+import { CreateFridgeUseCase } from '../../application/fridges/create-fridge.usecase';
+import { CreateFridgePresenter } from '../../domain/fridges/create-fridge.presenter';
 
 @Component({
   selector: 'app-main',
@@ -30,8 +30,8 @@ import { ICreateFridgePresenter } from '../../domain/fridges/ICreateFridgePresen
 `
 })
 export class MainComponent implements OnInit {
-  getAllPresenter = inject(IGetAllFridgesPresenter);
-  createPresenter = inject(ICreateFridgePresenter);
+  getAllPresenter = inject(GetAllFridgesPresenter);
+  createPresenter = inject(CreateFridgePresenter);
   
   private getAllUseCase = inject(GetAllFridgesUseCase);
   private createUseCase = inject(CreateFridgeUseCase);

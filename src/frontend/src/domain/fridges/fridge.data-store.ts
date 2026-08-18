@@ -1,6 +1,7 @@
-import { Fridge } from './Fridge.model';
+import { Fridge } from './fridge.model';
 
-export abstract class IFridgeDataStore {
+export abstract class FridgeDataStore
+{
   abstract getFridges(): Fridge[];
   abstract setFridges(fridges: Fridge[]): void;
   abstract addFridge(fridge: Fridge): void;
