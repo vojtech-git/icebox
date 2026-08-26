@@ -4,19 +4,21 @@
   "configurations": [
     {
       "name": "ng serve",
-      "type": "chrome",
+      "type": "firefox",
       "request": "launch",
       "preLaunchTask": "npm: start",
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}/src/frontend"
+      "webRoot": "${workspaceFolder}/src/frontend",
+      "tmpDir": "${workspaceFolder}/.vscode/firefox-tmp"
     },
     {
       "name": "ng test",
-      "type": "chrome",
+      "type": "firefox",
       "request": "launch",
       "preLaunchTask": "npm: test",
       "url": "http://localhost:9876/debug.html",
-      "webRoot": "${workspaceFolder}/src/frontend"
+      "webRoot": "${workspaceFolder}/src/frontend",
+      "tmpDir": "${workspaceFolder}/.vscode/firefox-tmp"
     },
     {
       "name": "Launch Backend (.NET)",
