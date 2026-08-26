@@ -4,35 +4,28 @@ import { FridgeDataStore } from '../../domain/fridges/fridge.data-store';
 import { GetAllFridgesPresenter } from '../../domain/fridges/get-all-fridges.presenter';
 
 @Injectable({ providedIn: 'root' })
-export class GetAllFridgesUseCase
-{
+export class GetAllFridgesUseCase {
   constructor(
     private repository: FridgeRepository,
     private dataStore: FridgeDataStore,
-    private presenter: GetAllFridgesPresenter
+    private presenter: GetAllFridgesPresenter,
   ) {}
 
-  execute(): void
-  {
+  execute(): void {
     const cachedFridges = this.dataStore.getFridges();
-    
-    if (cachedFridges.length > 0)
-    {
+
+    if (cachedFridges.length > 0) {
       this.presenter.presentFridges(cachedFridges);
-    }
-    else
-    {
+    } else {
       this.presenter.presentLoading();
     }
 
-    this.repository.fetchFridges().subscribe(
-    {
-      next: (fridges) =>
-      {
+    this.repository.fetchFridges().subscribe({
+      next: (fridges) => {
         this.dataStore.setFridges(fridges);
         this.presenter.presentFridges(fridges);
       },
-      error: (err) => this.presenter.presentError(err.message)
+      error: (err) => this.presenter.presentError(err.message),
     });
   }
 }

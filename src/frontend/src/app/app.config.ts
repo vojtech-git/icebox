@@ -12,15 +12,13 @@ import { SignalGetAllFridgesPresenter } from '../presentation/fridges/signal-get
 import { CreateFridgePresenter } from '../domain/fridges/create-fridge.presenter';
 import { SignalCreateFridgePresenter } from '../presentation/fridges/signal-create-fridge.presenter';
 
-export const appConfig: ApplicationConfig =
-{
-  providers:
-  [
+export const appConfig: ApplicationConfig = {
+  providers: [
     provideRouter(routes),
     provideHttpClient(),
     { provide: FridgeRepository, useClass: HttpFridgeRepository },
     { provide: FridgeDataStore, useClass: InMemoryFridgeStore },
     { provide: GetAllFridgesPresenter, useClass: SignalGetAllFridgesPresenter },
-    { provide: CreateFridgePresenter, useClass: SignalCreateFridgePresenter }
-  ]
+    { provide: CreateFridgePresenter, useClass: SignalCreateFridgePresenter },
+  ],
 };

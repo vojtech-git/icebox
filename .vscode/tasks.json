@@ -6,6 +6,9 @@
       "type": "npm",
       "script": "start",
       "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/src/frontend"
+      },
       "problemMatcher": {
         "owner": "typescript",
         "pattern": "$tsc",
@@ -24,6 +27,9 @@
       "type": "npm",
       "script": "test",
       "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/src/frontend"
+      },
       "problemMatcher": {
         "owner": "typescript",
         "pattern": "$tsc",
@@ -37,6 +43,18 @@
           }
         }
       }
+    },
+    {
+      "label": "build backend",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/backend/Icebox.slnx",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
     }
   ]
 }
