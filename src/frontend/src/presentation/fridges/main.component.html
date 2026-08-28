@@ -26,8 +26,8 @@
               <span class="food-date">{{ food.expirationDate }}</span>
             </div>
             <div class="actions">
-              <button>E</button>
-              <button>X</button>
+              <button (click)="openEditFoodModal(fridge.id, food)">E</button>
+              <button (click)="deleteFood(fridge.id, food.id)">X</button>
             </div>
           </div>
         }
@@ -44,7 +44,7 @@
   </button>
 </div>
 
-<!-- Create Fridge Modal -->
+<!-- Edit Fridge Modal -->
 @if (isEditFridgeModalOpen()) {
   <div class="modal-overlay">
     <div class="modal-content">
@@ -85,6 +85,52 @@
       <div class="modal-actions">
         <button class="cancel-btn" (click)="closeFoodModal()">Cancel</button>
         <button (click)="confirmCreateFood()">Confirm</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Edit Food Modal -->
+@if (isEditFoodModalOpen()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h3>Edit Food</h3>
+      <input
+        type="text"
+        [value]="editFoodName()"
+        (input)="editFoodName.set($any($event.target).value)"
+        placeholder="Food Name"
+      />
+      <input
+        type="date"
+        [value]="editFoodExpiration()"
+        (input)="editFoodExpiration.set($any($event.target).value)"
+        placeholder="Expiration Date"
+      />
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closeEditFoodModal()">
+          Cancel
+        </button>
+        <button (click)="confirmEditFood()">Confirm</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Create Fridge Modal -->
+@if (isFridgeModalOpen()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h3>Create New Fridge</h3>
+      <input
+        type="text"
+        [value]="newFridgeName()"
+        (input)="newFridgeName.set($any($event.target).value)"
+        placeholder="Fridge Name"
+      />
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closeModal()">Cancel</button>
+        <button (click)="confirmCreateFridge()">Confirm</button>
       </div>
     </div>
   </div>

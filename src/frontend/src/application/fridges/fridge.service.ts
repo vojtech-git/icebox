@@ -66,4 +66,44 @@ export class FridgeService {
       error: (err) => this.error.set(err.message),
     });
   }
+
+  updateFood(
+    fridgeId: string,
+    foodId: string,
+    name: string,
+    expirationDate: string,
+  ): void {
+    this.repository.updateFood(foodId, name, expirationDate).subscribe({
+      next: (updatedFood) => {
+        this.fridges.update((fs) =>
+          fs.map((f) =>
+            f.id === fridgeId
+              ? {
+                  ...f,
+                  foods: f.foods.map((food) =>
+                    food.id === foodId ? updatedFood : food,
+                  ),
+                }
+              : f,
+          ),
+        );
+      },
+      error: (err) => this.error.set(err.message),
+    });
+  }
+
+  deleteFood(fridgeId: string, foodId: string): void {
+    this.repository.deleteFood(foodId).subscribe({
+      next: () => {
+        this.fridges.update((fs) =>
+          fs.map((f) =>
+            f.id === fridgeId
+              ? { ...f, foods: f.foods.filter((food) => food.id !== foodId) }
+              : f,
+          ),
+        );
+      },
+      error: (err) => this.error.set(err.message),
+    });
+  }
 }

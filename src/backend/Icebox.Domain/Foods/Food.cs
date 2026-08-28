@@ -27,6 +27,6 @@ public class Food
       throw new ArgumentException("Food name cannot be empty.", nameof(name));
 
     Name = name;
-    ExpirationDate = expirationDate;
+    ExpirationDate = expirationDate.ToUniversalTime();
   }
 }

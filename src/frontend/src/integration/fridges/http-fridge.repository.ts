@@ -40,4 +40,19 @@ export class HttpFridgeRepository implements FridgeRepository {
   deleteFridge(id: string): Observable<boolean> {
     return this.http.delete<boolean>(`${this.fridgeUrl}/${id}`);
   }
+
+  updateFood(
+    id: string,
+    name: string,
+    expirationDate: string,
+  ): Observable<Food> {
+    return this.http.patch<Food>(`${this.foodUrl}/${id}`, {
+      name,
+      expirationDate,
+    });
+  }
+
+  deleteFood(id: string): Observable<boolean> {
+    return this.http.delete<boolean>(`${this.foodUrl}/${id}`);
+  }
 }
