@@ -21,7 +21,6 @@ body {
     sans-serif;
   background: var(--bg-gradient);
   color: var(--text-main);
-  padding: 2rem;
   min-height: 100vh;
 }
 
