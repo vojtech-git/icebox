@@ -1,0 +1,28 @@
+import { Injectable, signal, inject } from '@angular/core';
+import { FridgeRepository } from '../../domain/fridges/fridge.repository';
+import { Fridge } from '../../domain/fridges/fridge.model';
+
+@Injectable({ providedIn: 'root' })
+export class FridgeService {
+  private repository = inject(FridgeRepository);
+
+  readonly fridges = signal<Fridge[]>([]);
+  readonly isLoading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
+
+  loadAllFridges(): void {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    this.repository.fetchFridges().subscribe({
+      next: (fridges) => {
+        this.fridges.set(fridges);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.isLoading.set(false);
+      },
+    });
+  }
+}
