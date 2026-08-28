@@ -30,4 +30,9 @@ public class FoodRepository : IFoodRepository
   {
     await _context.SaveChangesAsync(cancellationToken);
   }
+
+  public async Task<List<Food>> GetAllAsync(CancellationToken cancellationToken)
+  {
+    return await _context.Foods.ToListAsync(cancellationToken);
+  }
 }

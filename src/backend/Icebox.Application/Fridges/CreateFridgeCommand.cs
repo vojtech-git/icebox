@@ -1,5 +1,6 @@
 using MediatR;
 using Icebox.Domain.Fridges;
+using Icebox.Application.Foods;
 
 namespace Icebox.Application.Fridges;
 
@@ -21,6 +22,6 @@ public class CreateFridgeCommandHandler : IRequestHandler<CreateFridgeCommand, F
     await _repository.AddAsync(fridge, cancellationToken);
     await _repository.SaveChangesAsync(cancellationToken);
 
-    return new FridgeDto(fridge.Id, fridge.Name, fridge.DateCreated, fridge.FoodIds);
+    return new FridgeDto(fridge.Id, fridge.Name, fridge.DateCreated, new List<FoodDto>());
   }
 }

@@ -1,22 +1,35 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { FridgeRepository } from '../../domain/fridges/fridge.repository';
 import { Fridge } from '../../domain/fridges/fridge.model';
+import { Food } from '../../domain/fridges/food.model';
 import { API_BASE_URL } from '../../app/app.tokens';
 
 @Injectable()
 export class HttpFridgeRepository implements FridgeRepository {
-  private readonly apiUrl = `${inject(API_BASE_URL)}/fridge`;
+  private readonly fridgeUrl = `${inject(API_BASE_URL)}/fridge`;
+  private readonly foodUrl = `${inject(API_BASE_URL)}/food`;
 
   constructor(private http: HttpClient) {}
 
   fetchFridges(): Observable<Fridge[]> {
-    return this.http.get<Fridge[]>(this.apiUrl);
+    return this.http.get<Fridge[]>(this.fridgeUrl);
   }
 
   createFridge(name: string): Observable<Fridge> {
-    return this.http.post<Fridge>(this.apiUrl, { name });
+    return this.http.post<Fridge>(this.fridgeUrl, { name });
+  }
+
+  createFood(
+    fridgeId: string,
+    name: string,
+    expirationDate: string,
+  ): Observable<Food> {
+    return this.http.post<Food>(this.foodUrl, {
+      fridgeId,
+      name,
+      expirationDate,
+    });
   }
 }

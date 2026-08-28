@@ -34,4 +34,19 @@ export class FridgeService {
       error: (err) => this.error.set(err.message),
     });
   }
+
+  createFood(fridgeId: string, name: string, expirationDate: string): void {
+    this.repository.createFood(fridgeId, name, expirationDate).subscribe({
+      next: (newFood) => {
+        this.fridges.update((fridges) =>
+          fridges.map((fridge) =>
+            fridge.id === fridgeId
+              ? { ...fridge, foods: [...(fridge.foods || []), newFood] }
+              : fridge,
+          ),
+        );
+      },
+      error: (err) => this.error.set(err.message),
+    });
+  }
 }

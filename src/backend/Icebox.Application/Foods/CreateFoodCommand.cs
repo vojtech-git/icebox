@@ -22,7 +22,9 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, FoodD
     var fridge = await _fridgeRepository.GetByIdAsync(request.FridgeId, cancellationToken);
     if (fridge is null) return null;
 
-    var food = new Food(request.Name, request.ExpirationDate, request.FridgeId);
+    var utcExpirationDate = DateTime.SpecifyKind(request.ExpirationDate, DateTimeKind.Utc);
+
+    var food = new Food(request.Name, utcExpirationDate, request.FridgeId);
 
     await _foodRepository.AddAsync(food, cancellationToken);
 

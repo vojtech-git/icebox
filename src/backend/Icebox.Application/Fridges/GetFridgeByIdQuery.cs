@@ -1,4 +1,5 @@
 using MediatR;
+using Icebox.Application.Foods;
 
 namespace Icebox.Application.Fridges;
 
@@ -15,6 +16,6 @@ public class GetFridgeByIdQueryHandler : IRequestHandler<GetFridgeByIdQuery, Fri
     var fridge = await _repository.GetByIdAsync(request.Id, cancellationToken);
     if (fridge is null) return null;
 
-    return new FridgeDto(fridge.Id, fridge.Name, fridge.DateCreated, fridge.FoodIds);
+    return new FridgeDto(fridge.Id, fridge.Name, fridge.DateCreated, new List<FoodDto>());
   }
 }
