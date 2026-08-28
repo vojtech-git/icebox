@@ -10,4 +10,6 @@ export abstract class FridgeRepository {
     name: string,
     expirationDate: string,
   ): Observable<Food>;
+  abstract updateFridge(id: string, name: string): Observable<Fridge>;
+  abstract deleteFridge(id: string): Observable<boolean>;
 }

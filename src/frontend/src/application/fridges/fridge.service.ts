@@ -49,4 +49,21 @@ export class FridgeService {
       error: (err) => this.error.set(err.message),
     });
   }
+
+  updateFridge(id: string, name: string): void {
+    this.repository.updateFridge(id, name).subscribe({
+      next: (updated) =>
+        this.fridges.update((fs) =>
+          fs.map((f) => (f.id === id ? { ...f, name: updated.name } : f)),
+        ),
+      error: (err) => this.error.set(err.message),
+    });
+  }
+
+  deleteFridge(id: string): void {
+    this.repository.deleteFridge(id).subscribe({
+      next: () => this.fridges.update((fs) => fs.filter((f) => f.id !== id)),
+      error: (err) => this.error.set(err.message),
+    });
+  }
 }

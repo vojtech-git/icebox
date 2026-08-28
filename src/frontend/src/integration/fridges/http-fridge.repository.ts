@@ -32,4 +32,12 @@ export class HttpFridgeRepository implements FridgeRepository {
       expirationDate,
     });
   }
+
+  updateFridge(id: string, name: string): Observable<Fridge> {
+    return this.http.patch<Fridge>(`${this.fridgeUrl}/${id}`, { name });
+  }
+
+  deleteFridge(id: string): Observable<boolean> {
+    return this.http.delete<boolean>(`${this.fridgeUrl}/${id}`);
+  }
 }

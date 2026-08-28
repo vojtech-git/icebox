@@ -11,8 +11,10 @@
       <div class="fridge-header">
         <span>{{ fridge.name }}</span>
         <div class="actions">
-          <button>E</button>
-          <button>X</button>
+          <button (click)="openEditFridgeModal(fridge.id, fridge.name)">
+            E
+          </button>
+          <button (click)="deleteFridge(fridge.id)">X</button>
         </div>
       </div>
 
@@ -43,19 +45,21 @@
 </div>
 
 <!-- Create Fridge Modal -->
-@if (isFridgeModalOpen()) {
+@if (isEditFridgeModalOpen()) {
   <div class="modal-overlay">
     <div class="modal-content">
-      <h3>Create New Fridge</h3>
+      <h3>Edit Fridge</h3>
       <input
         type="text"
-        [value]="newFridgeName()"
-        (input)="newFridgeName.set($any($event.target).value)"
+        [value]="editFridgeName()"
+        (input)="editFridgeName.set($any($event.target).value)"
         placeholder="Fridge Name"
       />
       <div class="modal-actions">
-        <button class="cancel-btn" (click)="closeModal()">Cancel</button>
-        <button (click)="confirmCreateFridge()">Confirm</button>
+        <button class="cancel-btn" (click)="closeEditFridgeModal()">
+          Cancel
+        </button>
+        <button (click)="confirmEditFridge()">Confirm</button>
       </div>
     </div>
   </div>

@@ -20,6 +20,36 @@ export class MainComponent implements OnInit {
   newFoodExpiration = signal('');
   activeFridgeId = signal<string | null>(null);
 
+  // Add Edit Fridge Modal State
+  isEditFridgeModalOpen = signal(false);
+  editFridgeId = signal<string | null>(null);
+  editFridgeName = signal('');
+
+  // Edit/Delete Methods
+  openEditFridgeModal(fridgeId: string, currentName: string): void {
+    this.editFridgeId.set(fridgeId);
+    this.editFridgeName.set(currentName);
+    this.isEditFridgeModalOpen.set(true);
+  }
+
+  closeEditFridgeModal(): void {
+    this.isEditFridgeModalOpen.set(false);
+    this.editFridgeId.set(null);
+  }
+
+  confirmEditFridge(): void {
+    const id = this.editFridgeId();
+    const name = this.editFridgeName().trim();
+    if (id && name) {
+      this.fridgeService.updateFridge(id, name);
+    }
+    this.closeEditFridgeModal();
+  }
+
+  deleteFridge(id: string): void {
+    this.fridgeService.deleteFridge(id);
+  }
+
   ngOnInit(): void {
     this.fridgeService.loadAllFridges();
   }
