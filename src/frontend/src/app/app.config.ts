@@ -11,6 +11,7 @@ import { InMemoryFridgeStore } from '../integration/fridges/in-memory-fridge.sto
 import { SignalGetAllFridgesPresenter } from '../presentation/fridges/signal-get-all-fridges.presenter';
 import { CreateFridgePresenter } from '../domain/fridges/create-fridge.presenter';
 import { SignalCreateFridgePresenter } from '../presentation/fridges/signal-create-fridge.presenter';
+import { API_BASE_URL } from './app.tokens';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +21,6 @@ export const appConfig: ApplicationConfig = {
     { provide: FridgeDataStore, useClass: InMemoryFridgeStore },
     { provide: GetAllFridgesPresenter, useClass: SignalGetAllFridgesPresenter },
     { provide: CreateFridgePresenter, useClass: SignalCreateFridgePresenter },
+    { provide: API_BASE_URL, useValue: 'http://localhost:8080/api' },
   ],
 };

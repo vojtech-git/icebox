@@ -1,13 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { FridgeRepository } from '../../domain/fridges/fridge.repository';
 import { Fridge } from '../../domain/fridges/fridge.model';
-import { environment } from '../../environments/environment';
+import { API_BASE_URL } from '../../app/app.tokens';
 
 @Injectable()
 export class HttpFridgeRepository implements FridgeRepository {
-  private readonly apiUrl = `${environment.apiUrl}/fridge`;
+  private readonly apiUrl = `${inject(API_BASE_URL)}/fridge`;
 
   constructor(private http: HttpClient) {}
 
