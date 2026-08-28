@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FridgeService } from '../../application/fridges/fridge.service';
+import { signal } from '@angular/core';
 
 @Component({
   selector: 'app-main',
@@ -77,6 +78,47 @@ import { FridgeService } from '../../application/fridges/fridge.service';
         cursor: pointer;
         border-radius: var(--radius);
       }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(128, 128, 128, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: var(--radius);
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        box-shadow: var(--shadow-md);
+      }
+      .modal-content input {
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 1rem;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .cancel-btn {
+        background-color: var(--text-muted);
+      }
+      .cancel-btn:hover {
+        background-color: #475569;
+      }
     `,
   ],
   template: `
@@ -117,12 +159,53 @@ import { FridgeService } from '../../application/fridges/fridge.service';
         </div>
       }
 
-      <button class="add-fridge-column-btn">+</button>
+      <button class="add-fridge-column-btn" (click)="openCreateFridgeModal()">
+        +
+      </button>
+
+      @if (isFridgeModalOpen()) {
+        <div class="modal-overlay">
+          <div class="modal-content">
+            <h3>Create New Fridge</h3>
+            <input
+              type="text"
+              [value]="newFridgeName()"
+              (input)="newFridgeName.set($any($event.target).value)"
+              placeholder="Fridge Name"
+            />
+            <div class="modal-actions">
+              <button class="cancel-btn" (click)="closeModal()">Cancel</button>
+              <button (click)="confirmCreateFridge()">Confirm</button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `,
 })
 export class MainComponent implements OnInit {
   fridgeService = inject(FridgeService);
+
+  isFridgeModalOpen = signal(false);
+  newFridgeName = signal(''); // why isnt this in the fridge service? its a state of the app no?
+
+  openCreateFridgeModal(): void {
+    this.newFridgeName.set('');
+    this.isFridgeModalOpen.set(true);
+  }
+
+  closeModal(): void {
+    this.isFridgeModalOpen.set(false);
+  }
+
+  confirmCreateFridge(): void {
+    const name = this.newFridgeName().trim();
+    if (name) {
+      // isnt this something i should add to the use case
+      this.fridgeService.createFridge(name);
+    }
+    this.closeModal();
+  }
 
   ngOnInit(): void {
     this.fridgeService.loadAllFridges();

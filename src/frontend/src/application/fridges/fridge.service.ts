@@ -25,4 +25,13 @@ export class FridgeService {
       },
     });
   }
+
+  createFridge(name: string): void {
+    this.repository.createFridge(name).subscribe({
+      next: (newFridge) => {
+        this.fridges.update((fridges) => [...fridges, newFridge]);
+      },
+      error: (err) => this.error.set(err.message),
+    });
+  }
 }
