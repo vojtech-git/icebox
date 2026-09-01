@@ -179,6 +179,13 @@ classDiagram
 
 ### FE class diagram
 
+This project follows a Clean Architecture pattern, separating the application into distinct layers:
+
+- Domain: Contains business models and abstract repository interfaces, completely independent of any frameworks or external libraries.
+- Application: Manages business logic and state using Angular Signals, coordinating actions between the UI and data layers.
+- Integration: Implements the concrete data-fetching mechanisms (e.g., `HttpFridgeRepository` using Angular's `HttpClient`) to communicate with external APIs.
+- Presentation (UI): Consists of standalone Angular components and templates that interact exclusively with the application services.
+
 ```mermaid
 %%{init: {'class': {'hideEmptyMembersBox': true}}}%%
 classDiagram
