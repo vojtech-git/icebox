@@ -1,4 +1,5 @@
 # Icebox
+
 A smart fridge tracker focused on effortless food logging and timely expiration alerts so nothing goes to waste.
 
 ## Analysis
@@ -29,6 +30,7 @@ graph LR
     User --> UC5
     User --> UC6
 ```
+
 #### Add fridge
 
 1. User clicks add fridge button on the main screen
@@ -78,7 +80,7 @@ classDiagram
         +name: String
         +expirationDate: Date
     }
-    
+
     Fridge "1" -- "0..*" Food : contains
 ```
 
@@ -87,23 +89,23 @@ classDiagram
 ### Endpoint definition
 
 - GET /fridge
-    - Gets all fridges and their food ids
+  - Gets all fridges and their food ids
 - GET /fridge/{id}
-    - Gets fridge and its food ids
+  - Gets fridge and its food ids
 - GET /food/{id}
-    - Gets food and its name and expiration date
+  - Gets food and its name and expiration date
 - POST /fridge
-    - Creates fridge with name
+  - Creates fridge with name
 - POST /food
-    - Creates food with name and expiration date
+  - Creates food with name and expiration date
 - PATCH /food/{id}
-    - Updates food name or expiration date
+  - Updates food name or expiration date
 - PATCH /fridge/{id}
-    - Updates fridge name
+  - Updates fridge name
 - DELETE /fridge/{id}
-    - Deletes a fridge and all its food
+  - Deletes a fridge and all its food
 - DELETE /food/{id}
-    - Deletes food
+  - Deletes food
 
 ### BE class diagram
 
@@ -180,61 +182,99 @@ classDiagram
 ```mermaid
 %%{init: {'class': {'hideEmptyMembersBox': true}}}%%
 classDiagram
-    namespace Models {
-        class FridgeDto {
+    namespace Domain {
+        class Fridge {
             +string id
             +string name
-            +string dateCreated
-            +string[] foodIds
+            +string[] foods
         }
-        class CreateFridgeCommand {
+        class Food {
+            +string id
             +string name
+            +string expirationDate
+        }
+        class FridgeRepository {
+            +fetchFridges() Observable~Fridge[]~
+            +createFridge(name) Observable~Fridge~
+            +createFood(fridgeId, name, expirationDate) Observable~Food~
+            +updateFridge(id, name) Observable~Fridge~
+            +deleteFridge(id) Observable~boolean~
+            +updateFood(id, name, expirationDate) Observable~Food~
+            +deleteFood(id) Observable~boolean~
         }
     }
-    namespace Services {
+    namespace Application {
         class FridgeService {
-            -HttpClient http
-            -string apiUrl
-            -string foodUrl
-            +getFridges() Observable~FridgeDto[]~
-            +createFridge(command) Observable~FridgeDto~
-            +deleteFridge(id)
-            +renameFridge(id, newName)
-            +getFridgeById(id)
-            +addFood(fridgeId, itemName)
-            +removeFood(itemId)
-            +getFoodById(foodId)
+            -repository: FridgeRepository
+            +fridges: Signal~Fridge[]~
+            +isLoading: Signal~boolean~
+            +error: Signal~string | null~
+            +loadAllFridges() void
+            +createFridge(name) void
+            +createFood(fridgeId, name, expirationDate) void
+            +updateFridge(id, name) void
+            +deleteFridge(id) void
+            +updateFood(fridgeId, foodId, name, expirationDate) void
+            +deleteFood(fridgeId, foodId) void
         }
     }
-    namespace Components {
-        class MainScreenComponent {
-            -FridgeService fridgeService
-            +signal fridges
-            +signal showPrompt
-            +ngOnInit()
-            +loadFridges()
-            +onFridgeAdded(newFridge)
-            +removeFridge(id)
-            +renameFridge(id)
-        }
-        class FridgeDetail {
-            -ActivatedRoute route
-            -FridgeService fridgeService
-            +signal fridge
-            +signal foods
-            +string fridgeId
-            +ngOnInit()
-            +loadFridge()
-            +loadFoods(foodIds)
-            +addNewItem()
-            +consumeItem(itemId)
+    namespace Presentation {
+        class MainComponent {
+            +fridgeService: FridgeService
+            +isFridgeModalOpen: Signal~boolean~
+            +newFridgeName: Signal~string~
+            +isEditFridgeModalOpen: Signal~boolean~
+            +editFridgeId: Signal~string | null~
+            +editFridgeName: Signal~string~
+            +isFoodModalOpen: Signal~boolean~
+            +newFoodName: Signal~string~
+            +newFoodExpiration: Signal~string~
+            +activeFridgeId: Signal~string | null~
+            +isEditFoodModalOpen: Signal~boolean~
+            +editFoodId: Signal~string | null~
+            +editFoodFridgeId: Signal~string | null~
+            +editFoodName: Signal~string~
+            +editFoodExpiration: Signal~string~
+            +ngOnInit() void
+            +openCreateFridgeModal() void
+            +closeModal() void
+            +confirmCreateFridge() void
+            +openEditFridgeModal(fridgeId, currentName) void
+            +closeEditFridgeModal() void
+            +confirmEditFridge() void
+            +deleteFridge(id) void
+            +openCreateFoodModal(fridgeId) void
+            +closeFoodModal() void
+            +confirmCreateFood() void
+            +openEditFoodModal(fridgeId, food) void
+            +closeEditFoodModal() void
+            +confirmEditFood() void
+            +deleteFood(fridgeId, foodId) void
         }
     }
 
-    MainScreenComponent --> FridgeService : uses
-    FridgeDetail --> FridgeService : uses
-    FridgeService --> FridgeDto : uses
-    FridgeService --> CreateFridgeCommand : uses
+    namespace Integration {
+        class HttpFridgeRepository {
+            -fridgeUrl: string
+            -foodUrl: string
+            +constructor(http: HttpClient)
+            +fetchFridges() Observable~Fridge[]~
+            +createFridge(name) Observable~Fridge~
+            +createFood(fridgeId, name, expirationDate) Observable~Food~
+            +updateFridge(id, name) Observable~Fridge~
+            +deleteFridge(id) Observable~boolean~
+            +updateFood(id, name, expirationDate) Observable~Food~
+            +deleteFood(id) Observable~boolean~
+        }
+    }
+
+    MainComponent --> FridgeService : uses
+    FridgeService --> FridgeRepository : uses
+    FridgeRepository <|-- HttpFridgeRepository : implements
+    FridgeService --> Fridge : uses
+    FridgeService --> Food : uses
+    FridgeRepository --> Fridge : returns
+    FridgeRepository --> Food : returns
 ```
 
 ## Implementation
