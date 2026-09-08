@@ -1,3 +1,5 @@
+using Icebox.Domain.Foods;
+
 namespace Icebox.Domain.Fridges;
 
 public class Fridge
@@ -5,8 +7,8 @@ public class Fridge
   public Guid Id { get; private set; }
   public string Name { get; private set; }
   public DateTime DateCreated { get; private set; }
-  public List<Guid> FoodIds { get; private set; } = new();
-
+  private readonly List<Food> _foods = new();
+  public IReadOnlyCollection<Food> Foods => _foods.AsReadOnly();
   public Fridge(string name)
   {
     if (string.IsNullOrWhiteSpace(name))

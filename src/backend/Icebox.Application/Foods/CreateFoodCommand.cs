@@ -28,7 +28,6 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, FoodR
 
     await _foodRepository.AddAsync(food, cancellationToken);
 
-    fridge.FoodIds.Add(food.Id);
     await _foodRepository.SaveChangesAsync(cancellationToken);
 
     return new FoodResponse(food.Id, food.Name, food.ExpirationDate, food.FridgeId);

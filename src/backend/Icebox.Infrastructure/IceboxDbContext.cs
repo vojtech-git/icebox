@@ -17,7 +17,10 @@ public class IceboxDbContext : DbContext
     {
       entity.HasKey(e => e.Id);
       entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-      entity.PrimitiveCollection(e => e.FoodIds);
+
+      entity.Navigation(e => e.Foods)
+            .HasField("_foods")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     });
 
     modelBuilder.Entity<Food>(entity =>
@@ -29,9 +32,9 @@ public class IceboxDbContext : DbContext
     });
 
     modelBuilder.Entity<Food>()
-    .HasOne<Fridge>()
-    .WithMany()
-    .HasForeignKey(f => f.FridgeId)
-    .OnDelete(DeleteBehavior.Cascade);
+        .HasOne<Fridge>()
+        .WithMany(f => f.Foods)
+        .HasForeignKey(f => f.FridgeId)
+        .OnDelete(DeleteBehavior.Cascade);
   }
 }
