@@ -1,6 +1,6 @@
 using Icebox.Domain.Foods;
 
-namespace Icebox.Application.Foods;
+namespace Icebox.Domain.Foods;
 
 public interface IFoodRepository
 {

@@ -1,3 +1,4 @@
+using Icebox.Domain.Fridges;
 using MediatR;
 
 namespace Icebox.Application.Fridges;

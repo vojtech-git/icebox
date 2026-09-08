@@ -15,6 +15,7 @@ builder.Services.AddDbContext<IceboxDbContext>(options =>
 
 builder.Services.AddScoped<IFridgeRepository, FridgeRepository>();
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
+builder.Services.AddScoped<IFridgeReadService, FridgeReadService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

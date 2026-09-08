@@ -1,5 +1,6 @@
 using MediatR;
-using Icebox.Application.Fridges;
+using Icebox.Domain.Foods;
+using Icebox.Domain.Fridges;
 
 namespace Icebox.Application.Foods;
 

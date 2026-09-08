@@ -1,6 +1,6 @@
 using Icebox.Domain.Fridges;
 
-namespace Icebox.Application.Fridges;
+namespace Icebox.Domain.Fridges;
 
 public interface IFridgeRepository
 {

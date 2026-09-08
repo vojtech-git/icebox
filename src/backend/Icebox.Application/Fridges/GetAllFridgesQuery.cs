@@ -1,33 +1,20 @@
 using MediatR;
-using Icebox.Application.Foods;
 
 namespace Icebox.Application.Fridges;
 
-public record GetAllFridgesQuery : IRequest<List<FridgeDto>>;
+public record GetAllFridgesQuery : IRequest<List<FridgeResponse>>;
 
-public class GetAllFridgesQueryHandler : IRequestHandler<GetAllFridgesQuery, List<FridgeDto>>
+public class GetAllFridgesQueryHandler : IRequestHandler<GetAllFridgesQuery, List<FridgeResponse>>
 {
-  private readonly IFridgeRepository _fridgeRepository;
-  private readonly IFoodRepository _foodRepository;
+  private readonly IFridgeReadService _readService;
 
-  public GetAllFridgesQueryHandler(IFridgeRepository fridgeRepository, IFoodRepository foodRepository)
+  public GetAllFridgesQueryHandler(IFridgeReadService readService)
   {
-    _fridgeRepository = fridgeRepository;
-    _foodRepository = foodRepository;
+    _readService = readService;
   }
 
-  public async Task<List<FridgeDto>> Handle(GetAllFridgesQuery request, CancellationToken cancellationToken)
+  public async Task<List<FridgeResponse>> Handle(GetAllFridgesQuery request, CancellationToken cancellationToken)
   {
-    var fridges = await _fridgeRepository.GetAllAsync(cancellationToken);
-    var foods = await _foodRepository.GetAllAsync(cancellationToken);
-
-    return fridges.Select(f => new FridgeDto(
-      f.Id,
-      f.Name,
-      f.DateCreated,
-      foods.Where(food => food.FridgeId == f.Id)
-           .Select(food => new FoodDto(food.Id, food.Name, food.ExpirationDate, food.FridgeId))
-           .ToList()
-    )).ToList();
+    return await _readService.GetAllFridgesWithFoodsAsync(cancellationToken);
   }
 }
