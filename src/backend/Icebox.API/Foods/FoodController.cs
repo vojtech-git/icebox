@@ -13,9 +13,9 @@ public class FoodController : ControllerBase
   public FoodController(IMediator mediator) => _mediator = mediator;
 
   [HttpPost]
-  public async Task<IActionResult> Create([FromBody] CreateFoodCommand command)
+  public async Task<IActionResult> Create([FromBody] CreateFoodRequest request)
   {
-    var result = await _mediator.Send(command);
+    var result = await _mediator.Send(new CreateFoodCommand(request.Name, request.ExpirationDate, request.FridgeId));
     return result is null ? BadRequest("Target fridge does not exist.") : CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
   }
 

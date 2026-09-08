@@ -16,9 +16,9 @@ public class FridgeController : ControllerBase
   }
 
   [HttpPost]
-  public async Task<IActionResult> Create([FromBody] CreateFridgeCommand command)
+  public async Task<IActionResult> Create([FromBody] CreateFridgeRequest request)
   {
-    var result = await _mediator.Send(command);
+    var result = await _mediator.Send(new CreateFridgeCommand(request.Name));
     return CreatedAtAction(nameof(GetAll), new { id = result.Id }, result);
   }
 
