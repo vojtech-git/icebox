@@ -24,9 +24,10 @@ public class FridgeRepository : IFridgeRepository
 
   public async Task<Fridge?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
   {
-    return await _context.Fridges.FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+    return await _context.Fridges
+        .Include(f => f.Foods)
+        .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
   }
-
   public Task DeleteAsync(Fridge fridge, CancellationToken cancellationToken)
   {
     _context.Fridges.Remove(fridge);

@@ -1,5 +1,3 @@
-using Icebox.Domain.Fridges;
-
 namespace Icebox.Domain.Fridges;
 
 public interface IFridgeRepository
