@@ -5,7 +5,7 @@ using Icebox.Application.Foods;
 namespace Icebox.API.Foods;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/foods")]
 public class FoodController : ControllerBase
 {
   private readonly IMediator _mediator;

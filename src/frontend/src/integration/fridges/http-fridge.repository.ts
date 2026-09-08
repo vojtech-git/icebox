@@ -8,8 +8,8 @@ import { API_BASE_URL } from '../../app/app.tokens';
 
 @Injectable()
 export class HttpFridgeRepository implements FridgeRepository {
-  private readonly fridgeUrl = `${inject(API_BASE_URL)}/fridge`;
-  private readonly foodUrl = `${inject(API_BASE_URL)}/food`;
+  private readonly fridgeUrl = `${inject(API_BASE_URL)}/fridges`;
+  private readonly foodUrl = `${inject(API_BASE_URL)}/foods`;
 
   constructor(private http: HttpClient) {}
 

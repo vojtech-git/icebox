@@ -5,7 +5,7 @@ using MediatR;
 namespace Icebox.API.Fridges;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/fridges")]
 public class FridgeController : ControllerBase
 {
   private readonly IMediator _mediator;

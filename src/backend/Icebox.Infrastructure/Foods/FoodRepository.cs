@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Icebox.Application.Foods;
 using Icebox.Domain.Foods;
 
 namespace Icebox.Infrastructure.Foods;

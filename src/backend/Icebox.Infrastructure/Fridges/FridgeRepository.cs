@@ -1,4 +1,3 @@
-using Icebox.Application.Fridges;
 using Icebox.Domain.Fridges;
 using Microsoft.EntityFrameworkCore;
 
