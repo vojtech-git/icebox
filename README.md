@@ -107,7 +107,9 @@ classDiagram
 - DELETE /food/{id}
   - Deletes food
 
-### BE class diagram
+### BE class architecture
+
+The backend is built with Clean Architecture and CQRS pattern via MediatR to strictly separate read and write operations. Domain layer encapsulates rich, behavior-driven entities and defines the data access contracts. The Application layer orchestrates business use cases by defining distinct Commands for state mutations and Queries for data retrieval, alongside their respective MediatR Handlers and Response DTOs. To optimize database interactions, the Infrastructure layer implements these data contracts using Entity Framework Core with a dual approach: Commands rely on state-tracking Repositories to load, mutate, and persist domain entities, while Queries bypass repositories entirely to utilize dedicated Read Services. The API layer features thin Controllers whose responsibilities are mapping HTTP requests to MediatR messages, dispatching them, and returning the appropriate HTTP status codes, ensuring the web presentation remains decoupled from application logic.
 
 ```mermaid
 %%{init: {'class': {'hideEmptyMembersBox': true}}}%%
@@ -117,7 +119,8 @@ classDiagram
             +Guid Id
             +String Name
             +DateTime DateCreated
-            +List~Guid~ FoodIds
+            -List~Food~ foods
+            +IReadOnlyCollection~Food~ Foods
             +UpdateName(String)
         }
         class Food {
@@ -127,57 +130,139 @@ classDiagram
             +Guid FridgeId
             +UpdateDetails(String, DateTime)
         }
-    }
-    namespace Application {
         class IFridgeRepository {
             <<interface>>
-            +AddAsync(Fridge, CancellationToken)
-            +GetAllAsync(CancellationToken) List~Fridge~
-            +GetByIdAsync(Guid, CancellationToken) Fridge
-            +DeleteAsync(Fridge, CancellationToken)
-            +SaveChangesAsync(CancellationToken)
+            +AddAsync(Fridge, CancellationToken) Task
+            +GetByIdAsync(Guid, CancellationToken) Task~Fridge~
+            +DeleteAsync(Fridge, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
         }
         class IFoodRepository {
             <<interface>>
-            +AddAsync(Food, CancellationToken)
-            +GetByIdAsync(Guid, CancellationToken) Food
-            +DeleteAsync(Food, CancellationToken)
-            +SaveChangesAsync(CancellationToken)
+            +AddAsync(Food, CancellationToken) Task
+            +GetByIdAsync(Guid, CancellationToken) Task~Food~
+            +GetAllAsync(CancellationToken) Task~List~Food~~
+            +DeleteAsync(Food, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
         }
     }
+
+    namespace Application {
+        class FoodResponse {
+            <<record>>
+            +Guid Id
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
+        }
+        class FridgeResponse {
+            <<record>>
+            +Guid Id
+            +String Name
+            +DateTime DateCreated
+            +List~FoodResponse~ Foods
+        }
+        class IFridgeReadService {
+            <<interface>>
+            +GetAllFridgesWithFoodsAsync(CancellationToken) Task~List~FridgeResponse~~
+        }
+
+        %% Single Command Example
+        class CreateFoodCommand {
+            <<record>>
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
+        }
+        class CreateFoodCommandHandler {
+            +Handle(CreateFoodCommand, CancellationToken) Task~FoodResponse~
+        }
+
+        %% Single Query Example
+        class GetAllFridgesQuery {
+            <<record>>
+        }
+        class GetAllFridgesQueryHandler {
+            +Handle(GetAllFridgesQuery, CancellationToken) Task~List~FridgeResponse~~
+        }
+    }
+
     namespace Infrastructure {
         class IceboxDbContext {
-            +DbSet~Fridge~ Fridges
-            +DbSet~Food~ Foods
-        }
-        class FridgeRepository {
-            -IceboxDbContext _context
+            <<class>>
         }
         class FoodRepository {
             -IceboxDbContext _context
+            +AddAsync(Food, CancellationToken) Task
+            +GetByIdAsync(Guid, CancellationToken) Task~Food~
+            +DeleteAsync(Food, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
+            +GetAllAsync(CancellationToken) Task~List~Food~~
+        }
+        class FridgeReadService {
+            -IceboxDbContext _context
+            +GetAllFridgesWithFoodsAsync(CancellationToken) Task~List~FridgeResponse~~
+        }
+        class FridgeRepository {
+            -IceboxDbContext _context
+            +AddAsync(Fridge, CancellationToken) Task
+            +GetAllAsync(CancellationToken) Task~List~Fridge~~
+            +GetByIdAsync(Guid, CancellationToken) Task~Fridge~
+            +DeleteAsync(Fridge, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
         }
     }
+
     namespace API {
-        class FridgeController {
-            -IMediator _mediator
+        class CreateFoodRequest {
+            <<record>>
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
         }
+
         class FoodController {
             -IMediator _mediator
+            +Create(CreateFoodRequest, CancellationToken) Task~IActionResult~
+        }
+
+        class FridgeController {
+            -IMediator _mediator
+            +GetAll(CancellationToken) Task~IActionResult~
         }
     }
 
-    FridgeController --> IMediator : uses
-    FoodController --> IMediator : uses
-    FridgeRepository ..|> IFridgeRepository : implements
+    %% Domain Relationships
+    Fridge *-- Food : contains
+
+    %% Application Relationships
+    FridgeResponse *-- FoodResponse : contains
+
+    %% Command Pattern
+    CreateFoodCommandHandler ..> CreateFoodCommand : handles
+    CreateFoodCommandHandler ..> IFoodRepository : uses
+    CreateFoodCommandHandler ..> IFridgeRepository : uses
+
+    %% Query Pattern
+    GetAllFridgesQueryHandler ..> GetAllFridgesQuery : handles
+    GetAllFridgesQueryHandler ..> IFridgeReadService : uses
+
+    %% Infrastructure Implementations
     FoodRepository ..|> IFoodRepository : implements
-    FridgeRepository --> IceboxDbContext : uses
-    FoodRepository --> IceboxDbContext : uses
-    IceboxDbContext --> Fridge : manages
-    IceboxDbContext --> Food : manages
-    Fridge "1" o-- "0..*" Food : contains
+    FridgeRepository ..|> IFridgeRepository : implements
+    FridgeReadService ..|> IFridgeReadService : implements
+
+    FoodRepository ..> IceboxDbContext : depends on
+    FridgeRepository ..> IceboxDbContext : depends on
+    FridgeReadService ..> IceboxDbContext : depends on
+
+    %% API Dependencies
+    FoodController ..> CreateFoodRequest : uses
+    FoodController ..> CreateFoodCommand : sends
+    FridgeController ..> GetAllFridgesQuery : sends
 ```
 
-### FE class diagram
+### FE class architecture
 
 This project follows a Clean Architecture pattern, separating the application into distinct layers:
 
