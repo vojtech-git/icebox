@@ -3,18 +3,21 @@ using Icebox.Application.Fridges;
 using Scalar.AspNetCore;
 using Icebox.Infrastructure;
 using Icebox.Infrastructure.Fridges;
-using Icebox.Application.Foods;
 using Icebox.Infrastructure.Foods;
+using Icebox.Domain.Fridges;
+using Icebox.Domain.Foods;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IFridgeRepository).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllFridgesQuery).Assembly));
 
 builder.Services.AddDbContext<IceboxDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IFridgeRepository, FridgeRepository>();
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
+builder.Services.AddScoped<IFridgeReadService, FridgeReadService>();
+builder.Services.AddScoped<IFridgeReadService, FridgeReadService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,11 +26,11 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularDev",
-        policy => policy
-            .WithOrigins("http://localhost:4200", "http://192.168.1.105:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+  options.AddPolicy("AllowAngularDev",
+      policy => policy
+          .WithOrigins("http://localhost:4200", "http://192.168.1.105:4200")
+          .AllowAnyHeader()
+          .AllowAnyMethod());
 });
 
 var app = builder.Build();
@@ -36,8 +39,8 @@ app.UseCors("AllowAngularDev");
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+  app.MapOpenApi();
+  app.MapScalarApiReference();
 }
 
 app.MapControllers();

@@ -1,23 +1,24 @@
+using Icebox.Domain.Foods;
 using MediatR;
 
 namespace Icebox.Application.Foods;
 
-public record UpdateFoodCommand(Guid Id, string Name, DateTime ExpirationDate) : IRequest<FoodDto?>;
+public record UpdateFoodCommand(Guid Id, string Name, DateTime ExpirationDate) : IRequest<FoodResponse?>;
 
-public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, FoodDto?>
+public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, FoodResponse?>
 {
-    private readonly IFoodRepository _repository;
+  private readonly IFoodRepository _repository;
 
-    public UpdateFoodCommandHandler(IFoodRepository repository) => _repository = repository;
+  public UpdateFoodCommandHandler(IFoodRepository repository) => _repository = repository;
 
-    public async Task<FoodDto?> Handle(UpdateFoodCommand request, CancellationToken cancellationToken)
-    {
-        var food = await _repository.GetByIdAsync(request.Id, cancellationToken);
-        if (food is null) return null;
+  public async Task<FoodResponse?> Handle(UpdateFoodCommand request, CancellationToken cancellationToken)
+  {
+    var food = await _repository.GetByIdAsync(request.Id, cancellationToken);
+    if (food is null) return null;
 
-        food.UpdateDetails(request.Name, request.ExpirationDate);
-        await _repository.SaveChangesAsync(cancellationToken);
+    food.UpdateDetails(request.Name, request.ExpirationDate);
+    await _repository.SaveChangesAsync(cancellationToken);
 
-        return new FoodDto(food.Id, food.Name, food.ExpirationDate, food.FridgeId);
-    }
+    return new FoodResponse(food.Id, food.Name, food.ExpirationDate, food.FridgeId);
+  }
 }

@@ -1,34 +1,35 @@
 using MediatR;
-using Icebox.Application.Fridges;
 using Icebox.Domain.Foods;
+using Icebox.Domain.Fridges;
 
 namespace Icebox.Application.Foods;
 
-public record CreateFoodCommand(string Name, DateTime ExpirationDate, Guid FridgeId) : IRequest<FoodDto?>;
+public record CreateFoodCommand(string Name, DateTime ExpirationDate, Guid FridgeId) : IRequest<FoodResponse?>;
 
-public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, FoodDto?>
+public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, FoodResponse?>
 {
-    private readonly IFoodRepository _foodRepository;
-    private readonly IFridgeRepository _fridgeRepository;
+  private readonly IFoodRepository _foodRepository;
+  private readonly IFridgeRepository _fridgeRepository;
 
-    public CreateFoodCommandHandler(IFoodRepository foodRepository, IFridgeRepository fridgeRepository)
-    {
-        _foodRepository = foodRepository;
-        _fridgeRepository = fridgeRepository;
-    }
+  public CreateFoodCommandHandler(IFoodRepository foodRepository, IFridgeRepository fridgeRepository)
+  {
+    _foodRepository = foodRepository;
+    _fridgeRepository = fridgeRepository;
+  }
 
-    public async Task<FoodDto?> Handle(CreateFoodCommand request, CancellationToken cancellationToken)
-    {
-        var fridge = await _fridgeRepository.GetByIdAsync(request.FridgeId, cancellationToken);
-        if (fridge is null) return null;
+  public async Task<FoodResponse?> Handle(CreateFoodCommand request, CancellationToken cancellationToken)
+  {
+    var fridge = await _fridgeRepository.GetByIdAsync(request.FridgeId, cancellationToken);
+    if (fridge is null) return null;
 
-        var food = new Food(request.Name, request.ExpirationDate, request.FridgeId);
-        
-        await _foodRepository.AddAsync(food, cancellationToken);
-        
-        fridge.FoodIds.Add(food.Id);
-        await _foodRepository.SaveChangesAsync(cancellationToken);
+    var utcExpirationDate = DateTime.SpecifyKind(request.ExpirationDate, DateTimeKind.Utc);
 
-        return new FoodDto(food.Id, food.Name, food.ExpirationDate, food.FridgeId);
-    }
+    var food = new Food(request.Name, utcExpirationDate, request.FridgeId);
+
+    await _foodRepository.AddAsync(food, cancellationToken);
+
+    await _foodRepository.SaveChangesAsync(cancellationToken);
+
+    return new FoodResponse(food.Id, food.Name, food.ExpirationDate, food.FridgeId);
+  }
 }

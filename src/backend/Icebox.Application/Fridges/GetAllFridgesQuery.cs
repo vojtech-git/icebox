@@ -2,21 +2,19 @@ using MediatR;
 
 namespace Icebox.Application.Fridges;
 
-public record GetAllFridgesQuery : IRequest<List<FridgeDto>>;
+public record GetAllFridgesQuery : IRequest<List<FridgeResponse>>;
 
-public class GetAllFridgesQueryHandler : IRequestHandler<GetAllFridgesQuery, List<FridgeDto>>
+public class GetAllFridgesQueryHandler : IRequestHandler<GetAllFridgesQuery, List<FridgeResponse>>
 {
-    private readonly IFridgeRepository _repository;
+  private readonly IFridgeReadService _readService;
 
-    public GetAllFridgesQueryHandler(IFridgeRepository repository)
-    {
-        _repository = repository;
-    }
+  public GetAllFridgesQueryHandler(IFridgeReadService readService)
+  {
+    _readService = readService;
+  }
 
-    public async Task<List<FridgeDto>> Handle(GetAllFridgesQuery request, CancellationToken cancellationToken)
-    {
-        var fridges = await _repository.GetAllAsync(cancellationToken);
-        
-        return fridges.Select(f => new FridgeDto(f.Id, f.Name, f.DateCreated, f.FoodIds)).ToList();
-    }
+  public async Task<List<FridgeResponse>> Handle(GetAllFridgesQuery request, CancellationToken cancellationToken)
+  {
+    return await _readService.GetAllFridgesWithFoodsAsync(cancellationToken);
+  }
 }

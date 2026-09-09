@@ -1,4 +1,5 @@
 # Icebox
+
 A smart fridge tracker focused on effortless food logging and timely expiration alerts so nothing goes to waste.
 
 ## Analysis
@@ -29,6 +30,7 @@ graph LR
     User --> UC5
     User --> UC6
 ```
+
 #### Add fridge
 
 1. User clicks add fridge button on the main screen
@@ -78,7 +80,7 @@ classDiagram
         +name: String
         +expirationDate: Date
     }
-    
+
     Fridge "1" -- "0..*" Food : contains
 ```
 
@@ -87,27 +89,27 @@ classDiagram
 ### Endpoint definition
 
 - GET /fridge
-    - Gets all fridges and their food ids
+  - Gets all fridges and their food ids
 - GET /fridge/{id}
-    - Gets fridge and its food ids
+  - Gets fridge and its food ids
 - GET /food/{id}
-    - Gets food and its name and expiration date
+  - Gets food and its name and expiration date
 - POST /fridge
-    - Creates fridge with name
+  - Creates fridge with name
 - POST /food
-    - Creates food with name and expiration date
+  - Creates food with name and expiration date
 - PATCH /food/{id}
-    - Updates food name or expiration date
+  - Updates food name or expiration date
 - PATCH /fridge/{id}
-    - Updates fridge name
+  - Updates fridge name
 - DELETE /fridge/{id}
-    - Deletes a fridge and all its food
+  - Deletes a fridge and all its food
 - DELETE /food/{id}
-    - Deletes food
+  - Deletes food
 
-### BE class diagram
+### BE class architecture
 
-#### Fridges
+The backend is built with Clean Architecture and CQRS pattern via MediatR. Domain layer encapsulates rich, behavior-driven entities and defines the data access contracts. The Application layer orchestrates business use cases by defining Commands for state mutations and Queries for data retrieval, alongside their respective MediatR Handlers and Response DTOs. The Infrastructure layer implements these data contracts using Entity Framework Core with a dual approach: Commands rely on state-tracking Repositories to load, mutate, and persist domain entities, while Queries bypass repositories entirely to utilize dedicated Read Services. The API layer features thin Controllers whose responsibilities are mapping HTTP requests to MediatR messages, dispatching them, and returning the appropriate HTTP status codes, ensuring the web presentation remains decoupled from application logic.
 
 ```mermaid
 %%{init: {'class': {'hideEmptyMembersBox': true}}}%%
@@ -117,36 +119,250 @@ classDiagram
             +Guid Id
             +String Name
             +DateTime DateCreated
-            +List~Guid~ FoodIds
+            -List~Food~ foods
+            +IReadOnlyCollection~Food~ Foods
+            +UpdateName(String)
+        }
+        class Food {
+            +Guid Id
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
+            +UpdateDetails(String, DateTime)
+        }
+        class IFridgeRepository {
+            <<interface>>
+            +AddAsync(Fridge, CancellationToken) Task
+            +GetByIdAsync(Guid, CancellationToken) Task~Fridge~
+            +DeleteAsync(Fridge, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
+        }
+        class IFoodRepository {
+            <<interface>>
+            +AddAsync(Food, CancellationToken) Task
+            +GetByIdAsync(Guid, CancellationToken) Task~Food~
+            +GetAllAsync(CancellationToken) Task~List~Food~~
+            +DeleteAsync(Food, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
+        }
+    }
+
+    namespace Application {
+        class FoodResponse {
+            <<record>>
+            +Guid Id
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
+        }
+        class FridgeResponse {
+            <<record>>
+            +Guid Id
+            +String Name
+            +DateTime DateCreated
+            +List~FoodResponse~ Foods
+        }
+        class IFridgeReadService {
+            <<interface>>
+            +GetAllFridgesWithFoodsAsync(CancellationToken) Task~List~FridgeResponse~~
+        }
+
+        %% Single Command Example
+        class CreateFoodCommand {
+            <<record>>
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
+        }
+        class CreateFoodCommandHandler {
+            +Handle(CreateFoodCommand, CancellationToken) Task~FoodResponse~
+        }
+
+        %% Single Query Example
+        class GetAllFridgesQuery {
+            <<record>>
+        }
+        class GetAllFridgesQueryHandler {
+            +Handle(GetAllFridgesQuery, CancellationToken) Task~List~FridgeResponse~~
+        }
+    }
+
+    namespace Infrastructure {
+        class IceboxDbContext {
+            <<class>>
+        }
+        class FoodRepository {
+            -IceboxDbContext _context
+            +AddAsync(Food, CancellationToken) Task
+            +GetByIdAsync(Guid, CancellationToken) Task~Food~
+            +DeleteAsync(Food, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
+            +GetAllAsync(CancellationToken) Task~List~Food~~
+        }
+        class FridgeReadService {
+            -IceboxDbContext _context
+            +GetAllFridgesWithFoodsAsync(CancellationToken) Task~List~FridgeResponse~~
+        }
+        class FridgeRepository {
+            -IceboxDbContext _context
+            +AddAsync(Fridge, CancellationToken) Task
+            +GetAllAsync(CancellationToken) Task~List~Fridge~~
+            +GetByIdAsync(Guid, CancellationToken) Task~Fridge~
+            +DeleteAsync(Fridge, CancellationToken) Task
+            +SaveChangesAsync(CancellationToken) Task
+        }
+    }
+
+    namespace API {
+        class CreateFoodRequest {
+            <<record>>
+            +String Name
+            +DateTime ExpirationDate
+            +Guid FridgeId
+        }
+
+        class FoodController {
+            -IMediator _mediator
+            +Create(CreateFoodRequest, CancellationToken) Task~IActionResult~
+        }
+
+        class FridgeController {
+            -IMediator _mediator
+            +GetAll(CancellationToken) Task~IActionResult~
+        }
+    }
+
+    %% Domain Relationships
+    Fridge *-- Food : contains
+
+    %% Application Relationships
+    FridgeResponse *-- FoodResponse : contains
+
+    %% Command Pattern
+    CreateFoodCommandHandler ..> CreateFoodCommand : handles
+    CreateFoodCommandHandler ..> IFoodRepository : uses
+    CreateFoodCommandHandler ..> IFridgeRepository : uses
+
+    %% Query Pattern
+    GetAllFridgesQueryHandler ..> GetAllFridgesQuery : handles
+    GetAllFridgesQueryHandler ..> IFridgeReadService : uses
+
+    %% Infrastructure Implementations
+    FoodRepository ..|> IFoodRepository : implements
+    FridgeRepository ..|> IFridgeRepository : implements
+    FridgeReadService ..|> IFridgeReadService : implements
+
+    FoodRepository ..> IceboxDbContext : depends on
+    FridgeRepository ..> IceboxDbContext : depends on
+    FridgeReadService ..> IceboxDbContext : depends on
+
+    %% API Dependencies
+    FoodController ..> CreateFoodRequest : uses
+    FoodController ..> CreateFoodCommand : sends
+    FridgeController ..> GetAllFridgesQuery : sends
+```
+
+### FE class architecture
+
+On the frontend ive tried to implement the clean architecture aswel. Initial idea was to have the classic linear data flow of Controller -> Use Case -> Repos / Services / Presenters -> View where view would be the Component. But since i cant controll the lifecycle of Components i cant inject them into a Controller and all input actions come from the Component so i would have to listen to input events in my Controller somehow. That was too complicated and my plan failed. So ive implemented a simplified approach so far. Component is the entry point. Inside the Component methods I call methods of a "Service". These methods are what i consider the Use Cases. These Use Cases (Service methods) orchestrate the app. They call services modify the needed in memory state and so on. The component then keeps a reference to the state which lives inside of this service and updates the UI with Signals.
+
+```mermaid
+%%{init: {'class': {'hideEmptyMembersBox': true}}}%%
+classDiagram
+    namespace Domain {
+        class Fridge {
+            +string id
+            +string name
+            +string[] foods
+        }
+        class Food {
+            +string id
+            +string name
+            +string expirationDate
+        }
+        class FridgeRepository {
+            +fetchFridges() Observable~Fridge[]~
+            +createFridge(name) Observable~Fridge~
+            +createFood(fridgeId, name, expirationDate) Observable~Food~
+            +updateFridge(id, name) Observable~Fridge~
+            +deleteFridge(id) Observable~boolean~
+            +updateFood(id, name, expirationDate) Observable~Food~
+            +deleteFood(id) Observable~boolean~
         }
     }
     namespace Application {
-        class IFridgeRepository {
-            <<interface>>
-            +AddAsync(Fridge)
-            +GetAllAsync() List~Fridge~
+        class FridgeService {
+            -repository: FridgeRepository
+            +fridges: Signal~Fridge[]~
+            +isLoading: Signal~boolean~
+            +error: Signal~string | null~
+            +loadAllFridges() void
+            +createFridge(name) void
+            +createFood(fridgeId, name, expirationDate) void
+            +updateFridge(id, name) void
+            +deleteFridge(id) void
+            +updateFood(fridgeId, foodId, name, expirationDate) void
+            +deleteFood(fridgeId, foodId) void
         }
-        class CreateFridgeCommand
-        class GetAllFridgesQuery
     }
-    namespace Infrastructure {
-        class IceboxDbContext
-        class FridgeRepository
-    }
-    namespace API {
-        class FridgeController
+    namespace Presentation {
+        class MainComponent {
+            +fridgeService: FridgeService
+            +isFridgeModalOpen: Signal~boolean~
+            +newFridgeName: Signal~string~
+            +isEditFridgeModalOpen: Signal~boolean~
+            +editFridgeId: Signal~string | null~
+            +editFridgeName: Signal~string~
+            +isFoodModalOpen: Signal~boolean~
+            +newFoodName: Signal~string~
+            +newFoodExpiration: Signal~string~
+            +activeFridgeId: Signal~string | null~
+            +isEditFoodModalOpen: Signal~boolean~
+            +editFoodId: Signal~string | null~
+            +editFoodFridgeId: Signal~string | null~
+            +editFoodName: Signal~string~
+            +editFoodExpiration: Signal~string~
+            +ngOnInit() void
+            +openCreateFridgeModal() void
+            +closeModal() void
+            +confirmCreateFridge() void
+            +openEditFridgeModal(fridgeId, currentName) void
+            +closeEditFridgeModal() void
+            +confirmEditFridge() void
+            +deleteFridge(id) void
+            +openCreateFoodModal(fridgeId) void
+            +closeFoodModal() void
+            +confirmCreateFood() void
+            +openEditFoodModal(fridgeId, food) void
+            +closeEditFoodModal() void
+            +confirmEditFood() void
+            +deleteFood(fridgeId, foodId) void
+        }
     }
 
-    FridgeController --> CreateFridgeCommand : dispatches
-    FridgeController --> GetAllFridgesQuery : dispatches
-    CreateFridgeCommand --> IFridgeRepository : uses
-    GetAllFridgesQuery --> IFridgeRepository : uses
-    FridgeRepository ..|> IFridgeRepository : implements
-    FridgeRepository --> IceboxDbContext : uses
-    IFridgeRepository --> Fridge : returns
+    namespace Integration {
+        class HttpFridgeRepository {
+            -fridgeUrl: string
+            -foodUrl: string
+            +constructor(http: HttpClient)
+            +fetchFridges() Observable~Fridge[]~
+            +createFridge(name) Observable~Fridge~
+            +createFood(fridgeId, name, expirationDate) Observable~Food~
+            +updateFridge(id, name) Observable~Fridge~
+            +deleteFridge(id) Observable~boolean~
+            +updateFood(id, name, expirationDate) Observable~Food~
+            +deleteFood(id) Observable~boolean~
+        }
+    }
+
+    MainComponent --> FridgeService : uses
+    FridgeService --> FridgeRepository : uses
+    FridgeRepository <|-- HttpFridgeRepository : implements
+    FridgeService --> Fridge : uses
+    FridgeService --> Food : uses
+    FridgeRepository --> Fridge : returns
+    FridgeRepository --> Food : returns
 ```
-
-### FE class diagram
 
 ## Implementation
 
