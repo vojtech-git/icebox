@@ -109,7 +109,7 @@ classDiagram
 
 ### BE class architecture
 
-The backend is built with Clean Architecture and CQRS pattern via MediatR to strictly separate read and write operations. Domain layer encapsulates rich, behavior-driven entities and defines the data access contracts. The Application layer orchestrates business use cases by defining distinct Commands for state mutations and Queries for data retrieval, alongside their respective MediatR Handlers and Response DTOs. To optimize database interactions, the Infrastructure layer implements these data contracts using Entity Framework Core with a dual approach: Commands rely on state-tracking Repositories to load, mutate, and persist domain entities, while Queries bypass repositories entirely to utilize dedicated Read Services. The API layer features thin Controllers whose responsibilities are mapping HTTP requests to MediatR messages, dispatching them, and returning the appropriate HTTP status codes, ensuring the web presentation remains decoupled from application logic.
+The backend is built with Clean Architecture and CQRS pattern via MediatR. Domain layer encapsulates rich, behavior-driven entities and defines the data access contracts. The Application layer orchestrates business use cases by defining Commands for state mutations and Queries for data retrieval, alongside their respective MediatR Handlers and Response DTOs. The Infrastructure layer implements these data contracts using Entity Framework Core with a dual approach: Commands rely on state-tracking Repositories to load, mutate, and persist domain entities, while Queries bypass repositories entirely to utilize dedicated Read Services. The API layer features thin Controllers whose responsibilities are mapping HTTP requests to MediatR messages, dispatching them, and returning the appropriate HTTP status codes, ensuring the web presentation remains decoupled from application logic.
 
 ```mermaid
 %%{init: {'class': {'hideEmptyMembersBox': true}}}%%
@@ -264,12 +264,7 @@ classDiagram
 
 ### FE class architecture
 
-This project follows a Clean Architecture pattern, separating the application into distinct layers:
-
-- Domain: Contains business models and abstract repository interfaces, completely independent of any frameworks or external libraries.
-- Application: Manages business logic and state using Angular Signals, coordinating actions between the UI and data layers.
-- Integration: Implements the concrete data-fetching mechanisms (e.g., `HttpFridgeRepository` using Angular's `HttpClient`) to communicate with external APIs.
-- Presentation (UI): Consists of standalone Angular components and templates that interact exclusively with the application services.
+On the frontend ive tried to implement the clean architecture aswel. Initial idea was to have the classic linear data flow of Controller -> Use Case -> Repos / Services / Presenters -> View where view would be the Component. But since i cant controll the lifecycle of Components i cant inject them into a Controller and all input actions come from the Component so i would have to listen to input events in my Controller somehow. That was too complicated and my plan failed. So ive implemented a simplified approach so far. Component is the entry point. Inside the Component methods I call methods of a "Service". These methods are what i consider the Use Cases. These Use Cases (Service methods) orchestrate the app. They call services modify the needed in memory state and so on. The component then keeps a reference to the state which lives inside of this service and updates the UI with Signals.
 
 ```mermaid
 %%{init: {'class': {'hideEmptyMembersBox': true}}}%%
