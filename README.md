@@ -368,18 +368,66 @@ classDiagram
 
 ### BE
 
+I created one solution with a project for Domain, Application, Integration and API. I added the CQRS library and created the Commands and queries for the planned use cases. For db access i used EF core.
+
+#### API conventions
+
+Ive thought a bit about how do i want to design my api:
+
+use plural nouns and small letters
+POST /fridges
+
+for potential nested enpoints like POST /fridges/foods I rather use POST /foods with the fridge id in body.
+
+i try to match the FE needs so for example there is the GET /fridges endpoint that gets all fridges and all their food details.
+
 ### FE
+
+Frontend is just one bloated component with one service. No special libraries were used.
 
 ## Testing
 
-### BE
+- Unit tests are implemented using **xUnit** for the Domain layer, covering core entity invariants and business logic validations such as `Fridge` naming rules.
+- Run the backend test suite via the command line:
+  ```bash
+  dotnet test src/backend/Icebox.Domain.Tests/Icebox.Domain.Tests.csproj
+  ```
 
 ### FE
+
+- Frontend component and service tests are configured with Vitest and Angular Testing Library.
+- Run the frontend tests using the Angular CLI or package manager script:
+
+```bash
+npm --prefix src/frontend test
+```
 
 ## Deployment
 
 ### Docker
 
+The application is fully containerized using a multi-service docker-compose setup combining PostgreSQL, the .NET 10 API, and the Angular frontend.
+
+To build and spin up the entire stack locally, run the following command from the root directory:
+
+```bash
+docker compose up --build
+```
+
+Services will be exposed at:
+
+Frontend (Web): http://localhost:4200
+
+Backend API: http://localhost:8080 (includes Scalar API documentation at root in development)
+
+Database: http://localhost:5432
+
 ### Github actions
 
+Automated CI workflows are set up via GitHub Actions to automatically restore, build, and run both the .NET backend and Angular test suites on pushes and pull requests to main and develop.
+
 ### Git
+
+Repository is initialized with a standard .NET and Node/Angular .gitignore configuration covering build outputs, user-specific IDE settings (.vs/, .idea/), and dependency directories (node_modules/, bin/, obj/).
+
+Branching Strategy: Uses a structured workflow where main contains stable iteration releases, develop acts as the integration branch for ongoing development, and feature branches are created off develop using the naming convention iteration-{iterationnumber}/feature-name before being merged back into dev.
