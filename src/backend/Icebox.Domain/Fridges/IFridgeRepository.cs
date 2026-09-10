@@ -1,0 +1,9 @@
+namespace Icebox.Domain.Fridges;
+
+public interface IFridgeRepository
+{
+  Task AddAsync(Fridge fridge, CancellationToken cancellationToken);
+  Task<Fridge?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+  Task DeleteAsync(Fridge fridge, CancellationToken cancellationToken);
+  Task SaveChangesAsync(CancellationToken cancellationToken);
+}

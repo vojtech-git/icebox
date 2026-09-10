@@ -1,0 +1,37 @@
+{
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ng serve",
+      "type": "firefox",
+      "request": "launch",
+      "preLaunchTask": "npm: start",
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/src/frontend",
+      "tmpDir": "${workspaceFolder}/.vscode/firefox-tmp"
+    },
+    {
+      "name": "ng test",
+      "type": "firefox",
+      "request": "launch",
+      "preLaunchTask": "npm: test",
+      "url": "http://localhost:9876/debug.html",
+      "webRoot": "${workspaceFolder}/src/frontend",
+      "tmpDir": "${workspaceFolder}/.vscode/firefox-tmp"
+    },
+    {
+      "name": "Launch Backend (.NET)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build backend",
+      "program": "${workspaceFolder}/src/backend/Icebox.API/bin/Debug/net10.0/Icebox.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/backend/Icebox.API",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}
